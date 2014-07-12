@@ -126,7 +126,7 @@ public abstract class AbstractDavObjectStore<C extends ObjectCollection<?>> impl
 //        	davClient = SardineFactory.begin(username, new String(password));
         	
         	final String principalPath = pathResolver.getPrincipalPath(username);
-        	final String userPath = pathResolver.getUserPath(getUserName());
+        	final String userPath = pathResolver.getUserPath(username);
         	davClient = new DavClient(rootUrl, principalPath, userPath);
         	supportedFeatures = davClient.begin(username, password);
 
