@@ -80,6 +80,21 @@ public class DavClient {
 		final Protocol protocol = Protocol.getProtocol(url.getProtocol());
 		hostConfiguration = new HostConfiguration();
 		hostConfiguration.setHost(url.getHost(), url.getPort(), protocol);
+		
+		String host = System.getProperty("http.proxyHost");
+		if( host != null )
+		{
+			String port = System.getProperty("http.proxyPort");
+			try{
+				Integer p = Integer.parseInt(port);
+				hostConfiguration.setProxy(host, p);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+
+		}
 	}
 
 	void begin() {
