@@ -7,19 +7,26 @@
 	<name>iCal4j Connector</name>
 	<version>0.9.4.3</version>
 	<description> A Java library for accessing iCalendar data stores</description>
-
+	<url>http://ical4j.sourceforge.net</url>
+	<licenses>
+		<license>
+			<name>iCal4j - License</name>
+			<url>https://sourceforge.net/p/ical4j/ical4j-connector/ci/default/tree/LICENSE?format=raw</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 	<build>
 		<plugins>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-compiler-plugin</artifactId>
-			<version>3.0</version>
-			<configuration>
-				<source>1.7</source>
-				<target>1.7</target>
-			</configuration>
-		</plugin>
-	</plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 	<dependencies>
 		<dependency>
