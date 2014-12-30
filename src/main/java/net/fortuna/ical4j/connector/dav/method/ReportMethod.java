@@ -97,7 +97,17 @@ public class ReportMethod extends org.apache.jackrabbit.webdav.client.methods.Re
             if (props.get(CalDavPropertyName.CALENDAR_DATA) != null) {
                 String value = (String) props.get(CalDavPropertyName.CALENDAR_DATA).getValue();
                 CalendarBuilder builder = new CalendarBuilder();
-                calendars.add(builder.build(new StringReader(value)));
+                
+                try{
+                	calendars.add(builder.build(new StringReader(value)));
+                }
+                catch(ParserException e)
+                {
+                	// ignore java.lang.UnsupportedOperationException: Cannot set timezone for UTC properties for tasks
+                	// not much else to do. don't want to touch the ical4j parser.
+                	e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
             }
         }
         return calendars.toArray(new Calendar[calendars.size()]);
