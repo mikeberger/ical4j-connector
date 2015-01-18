@@ -107,6 +107,7 @@ public class ReportMethod extends org.apache.jackrabbit.webdav.client.methods.Re
                 	// not much else to do. don't want to touch the ical4j parser.
                 	e.printStackTrace();
                     System.out.println(e.getMessage());
+                    System.out.println(value);
                 }
             }
         }
