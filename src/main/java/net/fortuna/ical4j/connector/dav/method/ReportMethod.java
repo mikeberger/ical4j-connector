@@ -31,12 +31,19 @@
  */
 package net.fortuna.ical4j.connector.dav.method;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.fortuna.ical4j.connector.dav.CalDavConstants;
 import net.fortuna.ical4j.connector.dav.property.CalDavPropertyName;
 import net.fortuna.ical4j.connector.dav.property.CardDavPropertyName;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.property.Url;
 import net.fortuna.ical4j.vcard.VCard;
 import net.fortuna.ical4j.vcard.VCardBuilder;
 import org.apache.jackrabbit.webdav.DavException;
@@ -99,7 +106,20 @@ public class ReportMethod extends org.apache.jackrabbit.webdav.client.methods.Re
                 CalendarBuilder builder = new CalendarBuilder();
                 
                 try{
-                	calendars.add(builder.build(new StringReader(value)));
+                	Calendar cal = builder.build(new StringReader(value));
+                	
+                	// save HREF as URL property in the calendar just to get it back to the caller
+                	// really doesn't belong here - but don't want to modify ical4j
+                	try {
+                    	Url url = new Url();
+						url.setValue(response.getHref());
+	                	cal.getProperties().add(url);
+					} catch (URISyntaxException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+                }
+                	
+                	calendars.add(cal);
                 }
                 catch(ParserException e)
                 {

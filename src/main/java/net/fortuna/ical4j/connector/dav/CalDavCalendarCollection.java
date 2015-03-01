@@ -48,7 +48,9 @@ import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ConstraintViolationException;
 import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.property.Uid;
+import net.fortuna.ical4j.model.property.Url;
 import net.fortuna.ical4j.util.Calendars;
 import org.apache.jackrabbit.webdav.DavConstants;
 import org.apache.jackrabbit.webdav.*;
@@ -423,17 +425,27 @@ public class CalDavCalendarCollection extends AbstractDavObjectCollection<Calend
         writeCalendarOnServer(calendar, false);
     }
     
-    /**
-     * {@inheritDoc}
-     */
     public void writeCalendarOnServer(Calendar calendar, boolean isNew) throws ObjectStoreException, ConstraintViolationException {
-        Uid uid = Calendars.getUid(calendar);
-
-        String path = getPath();
-        if (!path.endsWith("/")) {
-            path = path.concat("/");
-        }
-        PutMethod putMethod = new PutMethod(path + uid.getValue() + ".ics");
+    	writeCalendarOnServer(calendar,isNew,null);
+    }
+    
+   
+    public void writeCalendarOnServer(Calendar calendar, boolean isNew, String url) throws ObjectStoreException, ConstraintViolationException {
+       
+    	String urlVal;
+    	
+    	// if no explicit URL, then derive url from uid
+    	if( url == null )
+    	{
+    		Uid uid = Calendars.getUid(calendar);
+    		urlVal = getFullUrlPath(uid.getValue());
+    	}
+    	else
+    		urlVal = getFullUrlPath(url);
+    	
+  
+    	PutMethod putMethod = new PutMethod(urlVal);
+        
         // putMethod.setAllEtags(true);
         if (isNew) {
             putMethod.addRequestHeader("If-None-Match", "*");
@@ -464,11 +476,8 @@ public class CalDavCalendarCollection extends AbstractDavObjectCollection<Calend
      * {@inheritDoc}
      */
     public Calendar getCalendar(String uid) {
-        String path = getPath();
-        if (!path.endsWith("/")) {
-            path = path.concat("/");
-        }
-        GetMethod method = new GetMethod(path + uid + ".ics");
+       
+        GetMethod method = new GetMethod(getFullUrlPath(uid));
         try {
             getStore().getClient().execute(method);
         } catch (Exception e) {
@@ -495,11 +504,8 @@ public class CalDavCalendarCollection extends AbstractDavObjectCollection<Calend
      */
     public Calendar removeCalendar(String uid) throws FailedOperationException, ObjectStoreException {
         Calendar calendar = getCalendar(uid);
-        String path = getPath();
-        if (!path.endsWith("/")) {
-            path = path.concat("/");
-        }
-        DeleteMethod deleteMethod = new DeleteMethod(path + uid + ".ics");
+        
+        DeleteMethod deleteMethod = new DeleteMethod(getFullUrlPath(uid));
         try {
             getStore().getClient().execute(deleteMethod);
         } catch (IOException e) {
@@ -733,5 +739,25 @@ public class CalDavCalendarCollection extends AbstractDavObjectCollection<Calend
     @Override
     public String toString() {
         return "Display Name: " +  getDisplayName() + ", id: " + getId();
+    }
+    
+    /**
+     * figure out the caldav calendar url 
+     * this library used to assume that the url was always based on the uid, but this is not true
+     */
+    private String getFullUrlPath(String url)
+    {
+    	
+    	String path = getPath();
+        if (!path.endsWith("/")) {
+            path = path.concat("/");
+        }
+        
+        if( !url.endsWith(".ics"))
+        	url += ".ics";
+        
+        return( path + url);
+        
+    	
     }
 }
